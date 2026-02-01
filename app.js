@@ -175,7 +175,8 @@
             expensesLabel: '.budget__expenses--value',
             percentageLabel: '.budget__expenses--percentage',
             container: '.container',
-            expensesPercLabel: '.item__percentage'
+            expensesPercLabel: '.item__percentage',
+            dateLabel: '.budget__title--month'
         };
 
             var formatNumber = function(num, type ){
@@ -201,6 +202,14 @@
                 dec = numSplit[1];
 
                 return (type === 'exp' ? '-' : '+') + ' ' + int + '.' +  dec;
+            };
+
+
+            var nodeListForEach = function(list, callback){
+                for(var i = 0; i < list.length; i++){
+                    callback(list[i], i);
+                }
+
             };
 
 
@@ -279,13 +288,6 @@
 
                 var fields = document.querySelectorAll(DOMstrings.expensesPercLabel);
 
-                var nodeListForEach = function(list, callback){
-                    for(var i = 0; i < list.length; i++){
-                        callback(list[i], i);
-                    }
-
-                };
-
                 nodeListForEach(fields, function(current, index){
                     if(percentages[index] > 0){
                         current.textContent = percentages[index] + '%';
@@ -293,6 +295,35 @@
                         current.textContent = '---';
                     }
                 });
+
+            },
+
+            dispalyMoth: function(){
+                var now, year, month, months;
+
+                now = new Date();
+                //var christmas = new Date(2026, 11, 25);
+
+                months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                month = now.getMonth();
+
+                year = now.getFullYear();
+                document.querySelector(DOMstrings.dateLabel).textContent = months[month] + ' ' + year; 
+            },
+
+            changedType: function(){
+
+                var fields = document.querySelectorAll(
+                    DOMstrings.inputType + ',' + 
+                    DOMstrings.inputDescription + ',' +
+                    DOMstrings.inputValue );
+
+                    nodeListForEach(fields, function(cur){
+                        cur.classList.toggle('red-focus');
+                    });
+
+
+                    document.querySelector(DOMstrings.inputBtn).classList.toggle('red');
 
             },
 
@@ -321,6 +352,7 @@
 
             document.querySelector(DOM.container).addEventListener('click', ctrlDeleteitem);
 
+            document.querySelector(DOM.inputType).addEventListener('change', UICtrl.changedType);
         };
 
         var updateBudget = function (){
@@ -404,6 +436,7 @@
         return {
             init: function(){
                 console.log('Application has started!');
+                UICtrl.dispalyMoth();
                 UICtrl.displayBudget({
                     budget: 0,
                     totalInc: 0,
